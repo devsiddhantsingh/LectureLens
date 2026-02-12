@@ -1,0 +1,21 @@
+Introduction to Artificial Intelligence
+
+1. What is AI?
+Artificial Intelligence (AI) is the simulation of human intelligence processes by machines, especially computer systems. These processes include learning (the acquisition of information and rules for using the information), reasoning (using rules to reach approximate or definite conclusions), and self-correction.
+
+2. Types of AI
+- Narrow AI: Designed to perform a narrow task (e.g., facial recognition, internet searches).
+- General AI: A system with generalized human cognitive abilities.
+
+3. Key Concepts
+- Machine Learning (ML): A subset of AI that provides systems the ability to automatically learn and improve from experience without being explicitly programmed.
+- Deep Learning: A subset of ML based on artificial neural networks with representation learning.
+- Natural Language Processing (NLP): The ability of a computer program to understand human language as it is spoken and written.
+
+4. Applications
+- Healthcare: Diagnosis, drug discovery.
+- Finance: Fraud detection, trading.
+- Transport: Autonomous vehicles.
+
+5. Future of AI
+Ethical considerations, job displacement, and the potential for superintelligence are major topics of discussion.
