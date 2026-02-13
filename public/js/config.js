@@ -1,6 +1,6 @@
 // Auto-generated config from .env
 export const CONFIG = {
-    "VITE_GROQ_API_KEY": "your_api_key_here",
+    "VITE_GROQ_API_KEY": "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",
     "VITE_FIREBASE_API_KEY": "AIzaSyBgRPiCOZgd-mwX3AveCooDdq8jUHL1AR8",
     "VITE_FIREBASE_AUTH_DOMAIN": "thelecturelens.firebaseapp.com",
     "VITE_FIREBASE_PROJECT_ID": "thelecturelens",
