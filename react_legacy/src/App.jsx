@@ -9,6 +9,10 @@ import { generateSummary } from './utils/summarizer';
 import { parsePPTX, parseTextFile } from './utils/pptParser';
 import { parsePDF, renderPageAsImage } from './utils/pdfParser';
 import { transcribeAudio, transcribeVideo } from './utils/audioTranscriber';
+import { useAuth } from './context/AuthContext';
+import { db } from './firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import AuthModal from './components/AuthModal';
 
 function App() {
     const [currentView, setCurrentView] = useState('landing');
@@ -17,6 +21,8 @@ function App() {
     const [currentStep, setCurrentStep] = useState('parse');
     const [error, setError] = useState(null);
     const [savedItems, setSavedItems] = useState([]);
+    const { currentUser, loginWithGoogle, logout } = useAuth();
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     const navigateTo = (view) => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -167,7 +173,7 @@ function App() {
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (inputData && results) {
             const newItem = {
                 name: inputData.name,
@@ -175,8 +181,21 @@ function App() {
                 date: new Date().toLocaleDateString(),
                 summary: results.summary,
                 results,
+                createdAt: serverTimestamp()
             };
-            setSavedItems(prev => [newItem, ...prev]);
+
+            if (currentUser) {
+                try {
+                    await addDoc(collection(db, 'users', currentUser.uid, 'lectures'), newItem);
+                    console.log("Saved to Firestore");
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                    setError("Failed to save to cloud: " + e.message);
+                }
+            } else {
+                setSavedItems(prev => [newItem, ...prev]);
+                setShowLoginModal(true); // Prompt to login after local save
+            }
         }
         navigateTo('dashboard');
     };
@@ -187,6 +206,7 @@ function App() {
                 <LandingPage
                     onStart={() => navigateTo('input')}
                     onViewDashboard={() => navigateTo('dashboard')}
+                    currentUser={currentUser}
                 />
             )}
 
@@ -221,8 +241,17 @@ function App() {
                     onBack={() => navigateTo('landing')}
                     onNewLecture={() => navigateTo('input')}
                     savedItems={savedItems}
+                    currentUser={currentUser}
+                    onLogin={loginWithGoogle}
+                    onLogout={logout}
                 />
             )}
+
+            {/* Login Prompt Modal */}
+            <AuthModal
+                isOpen={showLoginModal && !currentUser}
+                onClose={() => setShowLoginModal(false)}
+            />
         </div>
     );
 }

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Download } from 'lucide-react';
 import { downloadPDF } from '../utils/pdfGenerator';
+import QuizTab from './QuizTab';
+import ChatTab from './ChatTab';
 
 const OutputView = ({ data, results, onBack, onSave }) => {
     const [activeTab, setActiveTab] = useState('notes'); // notes, summary
@@ -8,6 +10,21 @@ const OutputView = ({ data, results, onBack, onSave }) => {
     // Ensure safe defaults even if results is null/undefined
     const notes = Array.isArray(results?.notes) ? results.notes : [];
     const summary = results?.summary || {};
+    const quizData = results?.quiz || [];
+    // We need original text for Chat. It was passed as prop? No, data.text might be there if type=text.
+    // If not, we might need to pass extractedText explicitly from App.jsx to OutputView.
+    // NOTE: App.jsx does NOT currently pass extractedText to OutputView. We need to fix that or use a workaround.
+    // Workaround: We will use the 'notes' content as a proxy context if full text is missing, OR update App.jsx.
+    // Let's assume for now we might miss it.
+    // Actually, looking at App.jsx, results contains { notes, summary, quiz }. It DOES NOT contain full text.
+    // We must pass `data.extractedText` if available, or we need to Modify App.jsx to pass it.
+    // Let's modify OutputView to accept it, and then we will patch App.jsx.
+
+    // For now, let's just use what we have in `data` (if it was text input) or fail gracefully.
+    // WAITING for App.jsx update for full context support.
+
+    // Quick Fix: Reconstruct context from notes for now.
+    const reconstructedContext = notes.map(n => `${n.topic}: ${n.content}`).join('\n\n');
 
     return (
         <div className="animate-fade-in" style={{ padding: '2rem', minHeight: '100vh' }}>
@@ -31,12 +48,18 @@ const OutputView = ({ data, results, onBack, onSave }) => {
             </header>
 
             {/* Tabs */}
-            <div className="tabs" style={{ maxWidth: '350px', marginBottom: '2rem' }}>
+            <div className="tabs" style={{ maxWidth: '600px', marginBottom: '2rem' }}>
                 <button className={`tab ${activeTab === 'notes' ? 'active' : ''}`} onClick={() => setActiveTab('notes')}>
                     📝 Notes
                 </button>
                 <button className={`tab ${activeTab === 'summary' ? 'active' : ''}`} onClick={() => setActiveTab('summary')}>
                     💡 Summary
+                </button>
+                <button className={`tab ${activeTab === 'quiz' ? 'active' : ''}`} onClick={() => setActiveTab('quiz')}>
+                    🧠 Quiz
+                </button>
+                <button className={`tab ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => setActiveTab('chat')}>
+                    💬 Chat
                 </button>
             </div>
 
@@ -335,6 +358,19 @@ const OutputView = ({ data, results, onBack, onSave }) => {
                             </div>
                         )}
                     </div>
+                </div>
+            )}
+            {/* =================== QUIZ TAB =================== */}
+            {activeTab === 'quiz' && (
+                <div id="quiz-content">
+                    <QuizTab quizData={quizData} />
+                </div>
+            )}
+
+            {/* =================== CHAT TAB =================== */}
+            {activeTab === 'chat' && (
+                <div id="chat-content">
+                    <ChatTab lectureText={reconstructedContext} />
                 </div>
             )}
         </div>

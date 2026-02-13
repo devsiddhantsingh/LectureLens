@@ -642,3 +642,28 @@ img {
     font-size: 2.5rem !important;
   }
 }
+
+/* — Quiz & Chat Specifics — */
+.quiz-option-hover:hover {
+  background: var(--glass-hover) !important;
+  border-color: var(--primary) !important;
+  transform: translateX(5px);
+}
+
+.typing-indicator {
+  animation: pulse-op 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-op {
+  0% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.5;
+  }
+}

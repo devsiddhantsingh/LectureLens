@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import FOG from 'vanta/dist/vanta.fog.min';
 import * as THREE from 'three';
 
-const LandingPage = ({ onStart, onViewDashboard }) => {
+const LandingPage = ({ onStart, onViewDashboard, currentUser }) => {
     const vantaRef = useRef(null);
     const [vantaEffect, setVantaEffect] = useState(null);
 
@@ -48,7 +48,7 @@ const LandingPage = ({ onStart, onViewDashboard }) => {
                     </span>
                 </div>
                 <button className="btn-secondary" onClick={onViewDashboard} style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem' }}>
-                    📚 My Notes
+                    {currentUser ? `📚 ${currentUser.displayName.split(' ')[0]}'s Notes` : '📚 My Notes'}
                 </button>
             </nav>
 

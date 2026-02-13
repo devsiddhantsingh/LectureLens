@@ -27,7 +27,7 @@ export async function analyzeBase64(base64Data, mimeType = 'image/jpeg') {
     // Strip data URL prefix if present
     const base64 = base64Data.replace(/^data:image\/[a-z]+;base64,/, '');
 
-    const response = await fetch('/api/groq/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${GROQ_API_KEY}`,

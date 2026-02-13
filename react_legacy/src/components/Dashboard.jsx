@@ -1,7 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { db } from '../firebase';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
-const Dashboard = ({ onBack, onNewLecture, savedItems }) => {
-    const items = savedItems || [];
+const Dashboard = ({ onBack, onNewLecture, savedItems: localItems, currentUser, onLogin, onLogout }) => {
+    const [cloudItems, setCloudItems] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!currentUser) {
+            setCloudItems([]);
+            return;
+        }
+
+        setLoading(true);
+        const q = query(collection(db, 'users', currentUser.uid, 'lectures'), orderBy('createdAt', 'desc'));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const items = [];
+            querySnapshot.forEach((doc) => {
+                items.push({ id: doc.id, ...doc.data() });
+            });
+            setCloudItems(items);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [currentUser]);
+
+    // Merge or switch between local vs cloud
+    const displayItems = currentUser ? cloudItems : localItems;
 
     return (
         <div className="container animate-fade-in" style={{ paddingTop: '3rem', paddingBottom: '4rem' }}>
@@ -21,13 +47,29 @@ const Dashboard = ({ onBack, onNewLecture, savedItems }) => {
                         {items.length} saved {items.length === 1 ? 'lecture' : 'lectures'}
                     </p>
                 </div>
-                <button className="btn-primary" onClick={onNewLecture}>
-                    + New Lecture
-                </button>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    {currentUser ? (
+                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                                {currentUser.displayName}
+                            </span>
+                            <button className="btn-secondary" onClick={onLogout} style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}>
+                                Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <button className="btn-secondary" onClick={onLogin} style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}>
+                            Login to Sync
+                        </button>
+                    )}
+                    <button className="btn-primary" onClick={onNewLecture}>
+                        + New Lecture
+                    </button>
+                </div>
             </div>
 
             {/* Empty State */}
-            {items.length === 0 && (
+            {!loading && displayItems.length === 0 && (
                 <div className="glass-card" style={{
                     padding: '4rem', textAlign: 'center',
                     maxWidth: '500px', margin: '0 auto',
@@ -43,13 +85,21 @@ const Dashboard = ({ onBack, onNewLecture, savedItems }) => {
                 </div>
             )}
 
+            {/* Loading State */}
+            {loading && (
+                <div style={{ textAlign: 'center', padding: '4rem' }}>
+                    <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
+                    <p style={{ color: 'var(--text-muted)' }}>Syncing your library...</p>
+                </div>
+            )}
+
             {/* Saved Items Grid */}
-            {items.length > 0 && (
+            {!loading && displayItems.length > 0 && (
                 <div className="stagger-children" style={{
                     display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
                     gap: '1.5rem',
                 }}>
-                    {items.map((item, i) => (
+                    {displayItems.map((item, i) => (
                         <div key={i} className="glass-card" style={{ padding: '1.5rem', cursor: 'pointer' }}>
                             <div style={{
                                 display: 'flex', justifyContent: 'space-between',

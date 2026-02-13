@@ -2,6 +2,7 @@
 // 🔑 GROQ API KEY — Paste your key below
 // ============================================
 // Get your free API key at: https://console.groq.com/keys
+// Get your free API key at: https://console.groq.com/keys
 export const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 
 // Models
