@@ -1,22 +1,23 @@
 # Dependencies
 node_modules/
-legacy_react/node_modules/
 
-# Environment Variables
+# Environment Variables (Secrets)
 .env
 .env.local
 
-# Generated Config (Contains Secrets)
-js/config.js
+# Generated Config (Secrets)
+public/js/config.js
+
+# Firebase
+.firebase/
+firebase-debug.log
 
 # Build Output
 dist/
-legacy_react/dist/
+build/
 
-# OS Files
-.DS_Store
-Thumbs.db
-
-# Editors
+# IDEs & OS
 .vscode/
 .idea/
+.DS_Store
+Thumbs.db
