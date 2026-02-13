@@ -43,15 +43,7 @@ export function renderLanding(container, app) {
 
                 <div style="position: relative; z-index: 2; max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
                     
-                    <a href="https://github.com/yourusername/LectureLens" target="_blank" class="badge-pill animate-fade-in" style="
-                        margin-bottom: 2rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
-                        background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-                        padding: 0.5rem 1rem; border-radius: 99px; transition: all 0.2s; cursor: pointer;
-                    ">
-                        <span style="color: var(--accent);">✨ New v2.0</span> 
-                        <span style="color: var(--text-secondary);">Now with PDF Export & Cloud Sync</span>
-                        <i data-lucide="arrow-right" style="width: 14px; color: var(--text-muted);"></i>
-                    </a>
+                    
 
                     <h1 class="animate-slide-up" style="
                         font-size: clamp(3.5rem, 8vw, 6rem); font-weight: 800; line-height: 1.1;

@@ -2,19 +2,25 @@ const fs = require('fs');
 const path = require('path');
 
 const envPath = path.join(__dirname, '../.env');
-const configPath = path.join(__dirname, '../js/config.js');
+const configPath = path.join(__dirname, '../public/js/config.js');
 
 try {
     const envContent = fs.readFileSync(envPath, 'utf8');
-    const lines = envContent.split('\n');
+    console.log(`Debug: Read .env from ${envPath}, length: ${envContent.length}`);
+    const lines = envContent.split(/\r?\n/);
     const config = {};
 
     lines.forEach(line => {
         const match = line.match(/^([^=]+)=(.*)$/);
         if (match) {
+            console.log(`Debug: Matched line: ${line}`);
             const key = match[1].trim();
-            const value = match[2].trim();
-            // Include VITE_ keys and any other relevant ones
+            // Remove surrounding quotes if present
+            let value = match[2].trim();
+            if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+                value = value.slice(1, -1);
+            }
+            // Include VITE_ keys, GROQ_API_KEY, and ensure FIREBASE keys are captured even if they don't start with VITE_ (just in caseUser changed them)
             if (key.startsWith('VITE_') || key === 'GROQ_API_KEY') {
                 config[key] = value;
             }
