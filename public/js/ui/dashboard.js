@@ -78,23 +78,45 @@ export async function renderDashboard(container, app) {
             </div>
 
             <!-- Search & Filter -->
-            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-                <div style="flex: 1; position: relative; min-width: 250px;">
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center;">
+                <div style="flex: 1; position: relative; min-width: 300px;">
                     <i data-lucide="search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 18px;"></i>
-                    <input type="text" id="search-input" placeholder="Search your library..." style="
-                        width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem;
+                    <input type="text" id="search-input" placeholder="Search by topic or content..." style="
+                        width: 100%; padding: 0.85rem 1rem 0.85rem 3rem;
                         background: var(--bg-card); border: 1px solid var(--glass-border);
-                        border-radius: var(--radius-sm); color: white; outline: none;
-                        transition: border-color 0.2s;
+                        border-radius: var(--radius-md); color: white; outline: none;
+                        transition: all 0.2s; font-size: 0.95rem;
                     ">
                 </div>
-                <!-- Future: Dropdown for Type Filter -->
+                
+                <!-- Type Filter Dropdown -->
+                <div style="position: relative; min-width: 180px;">
+                     <div style="position: relative;">
+                        <i data-lucide="filter" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 16px;"></i>
+                        <select id="type-filter" style="
+                            width: 100%; padding: 0.85rem 1rem 0.85rem 3rem;
+                            background: var(--bg-card); border: 1px solid var(--glass-border);
+                            border-radius: var(--radius-md); color: var(--text-primary); outline: none;
+                            appearance: none; cursor: pointer; font-size: 0.95rem;
+                            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E');
+                            background-repeat: no-repeat; background-position: right 1rem center; background-size: 16px;
+                        ">
+                            <option value="all">All Types</option>
+                            <option value="pdf">📄 PDF Documents</option>
+                            <option value="ppt">📊 PowerPoints</option>
+                            <option value="audio">🎧 Audio</option>
+                            <option value="video">🎥 Video</option>
+                            <option value="image">🖼️ Images</option>
+                            <option value="text">📝 Text Notes</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <!-- Content Grid -->
             <div id="notes-grid" style="
-                display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-                gap: 1.5rem; padding-bottom: 4rem;
+                display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+                gap: 2rem; padding-bottom: 4rem;
             ">
                 <!-- Cards Injected Here -->
             </div>
@@ -103,18 +125,37 @@ export async function renderDashboard(container, app) {
 
     // 5. Render Cards
     const grid = container.querySelector('#notes-grid');
+    const searchInput = container.querySelector('#search-input');
+    const typeFilter = container.querySelector('#type-filter');
+
+    // Filter Logic
+    const filterNotes = () => {
+        const term = searchInput.value.toLowerCase();
+        const type = typeFilter.value;
+
+        const filtered = notes.filter(n => {
+            const matchesSearch = (n.topic && n.topic.toLowerCase().includes(term)) ||
+                (n.summary.overview && n.summary.overview.toLowerCase().includes(term));
+            const matchesType = type === 'all' || n.type === type;
+            return matchesSearch && matchesType;
+        });
+        renderNoteCards(grid, filtered, app);
+    };
 
     if (notes.length === 0) {
         grid.style.display = 'block'; // Remove grid layout for empty state
         grid.innerHTML = `
-            <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
-                <div style="margin-bottom: 1.5rem; opacity: 0.3;">
-                    <i data-lucide="ghost" width="64" height="64"></i>
+            <div style="text-align: center; padding: 6rem 2rem; color: var(--text-muted);">
+                <div style="margin-bottom: 2rem; opacity: 0.5; position: relative; display: inline-block;">
+                    <div style="position: absolute; inset: 0; background: var(--primary); opacity: 0.2; blur(20px); border-radius: 50%;"></div>
+                    <i data-lucide="sparkles" width="64" height="64" style="position: relative; color: var(--text-secondary);"></i>
                 </div>
-                <h3 style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Nothing here yet</h3>
-                <p style="margin-bottom: 2rem;">It's a bit empty in space. Start your journey!</p>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem;">Your knowledge hub is empty</h3>
+                <p style="margin-bottom: 2.5rem; font-size: 1.1rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                    Upload your first lecture to start building your personal AI-powered study library.
+                </p>
                 <button class="btn-primary" onclick="window.app.navigateTo('input')">
-                    Create First Analysis
+                    <i data-lucide="plus"></i> Create First Analysis
                 </button>
             </div>
         `;
@@ -122,16 +163,9 @@ export async function renderDashboard(container, app) {
         renderNoteCards(grid, notes, app);
     }
 
-    // 6. Search Functionality
-    const searchInput = container.querySelector('#search-input');
-    searchInput.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = notes.filter(n =>
-            (n.topic && n.topic.toLowerCase().includes(term)) ||
-            (n.summary.overview && n.summary.overview.toLowerCase().includes(term))
-        );
-        renderNoteCards(grid, filtered, app);
-    });
+    // 6. Event Listeners
+    searchInput.addEventListener('input', filterNotes);
+    typeFilter.addEventListener('change', filterNotes);
 
     if (window.lucide) window.lucide.createIcons();
 }
@@ -140,13 +174,18 @@ function renderNoteCards(container, notes, app) {
     container.innerHTML = '';
 
     if (notes.length === 0) {
-        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No matches found.</p>`;
+        container.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 4rem;">
+                <i data-lucide="search-x" width="48" height="48" style="opacity: 0.5; margin-bottom: 1rem;"></i>
+                <p>No matches found.</p>
+            </div>`;
+        if (window.lucide) window.lucide.createIcons();
         return;
     }
 
     notes.forEach(data => {
         const card = document.createElement('div');
-        card.className = 'glass-card animate-fade-in';
+        card.className = 'glass-card animate-fade-in trigger-hover'; // Add trigger-hover class if useful
         card.style.cursor = 'pointer';
         card.style.display = 'flex';
         card.style.flexDirection = 'column';
@@ -186,44 +225,52 @@ function renderNoteCards(container, notes, app) {
         const dateStr = data.createdAt ? timeAgo(data.createdAt.toDate()) : 'Unknown Date';
 
         card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <div style="
-                        width: 40px; height: 40px; border-radius: 10px;
+                        width: 44px; height: 44px; border-radius: 12px;
                         background: ${typeConfig.color}15; color: ${typeConfig.color};
                         display: grid; place-items: center;
                         border: 1px solid ${typeConfig.color}30;
+                        box-shadow: 0 4px 12px ${typeConfig.color}10;
                     ">
-                        <i data-lucide="${typeConfig.icon}" width="20"></i>
+                        <i data-lucide="${typeConfig.icon}" width="22"></i>
                     </div>
                     <div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.1rem;">${data.type}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-faint);">${dateStr}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.2rem;">${data.type}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-faint);">${dateStr}</div>
                     </div>
                 </div>
-                <button class="delete-btn" style="
-                    width: 28px; height: 28px; display: grid; place-items: center;
-                    color: var(--text-muted); background: transparent; border: none;
-                    border-radius: 6px; cursor: pointer; transition: all 0.2s;
+                <button class="delete-btn" title="Delete" style="
+                    width: 32px; height: 32px; display: grid; place-items: center;
+                    color: var(--text-muted); background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+                    border-radius: 8px; cursor: pointer; transition: all 0.2s;
                 ">
-                    <i data-lucide="more-horizontal" width="16"></i>
+                    <i data-lucide="trash-2" width="16"></i>
                 </button>
             </div>
             
-            <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.75rem; line-height: 1.3; color: white;">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.3; color: var(--text-primary);">
                 ${data.topic || 'Untitled Analysis'}
             </h3>
             
-            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: auto;">
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: auto;">
                 ${data.summary.overview || "No preview available."}
             </p>
 
-            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
-                    ${data.quiz ? `<span style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="help-circle" width="12"></i> Quiz</span>` : ''}
-                    ${data.notes ? `<span style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="file-text" width="12"></i> Notes</span>` : ''}
+            <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                    ${data.quiz ? `<span style="display: flex; align-items: center; gap: 0.35rem;" title="Quiz Available"><i data-lucide="help-circle" width="16" style="color: var(--warning);"></i> Quiz</span>` : ''}
+                    ${data.notes ? `<span style="display: flex; align-items: center; gap: 0.35rem;" title="Notes Available"><i data-lucide="file-text" width="16" style="color: var(--primary-light);"></i> Notes</span>` : ''}
                 </div>
-                <div style="color: var(--primary); font-size: 0.85rem; font-weight: 500;">View</div>
+                <button class="open-btn" style="
+                    background: var(--primary-surface); color: var(--primary-light);
+                    border: 1px solid rgba(99, 102, 241, 0.3); padding: 0.5rem 1.2rem;
+                    border-radius: 20px; font-size: 0.9rem; font-weight: 600;
+                    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem;
+                ">
+                    Open <i data-lucide="arrow-right" width="14"></i>
+                </button>
             </div>
         `;
 
@@ -246,8 +293,26 @@ function renderNoteCards(container, notes, app) {
             });
         });
 
+        // Add explicit listener to the Open button too, although the card listener covers it
+        // The issue was returning early if button was clicked.
+        // Let's remove the return early check OR handle the open button explicitly.
+        // Handling explicitly is safer.
+        const openBtn = card.querySelector('.open-btn');
+        openBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Stop bubbling to card
+            app.params.results = data;
+            app.navigateTo('output');
+        });
+
+
         card.addEventListener('click', (e) => {
+            // If they clicked delete (handled above with stopPropagation), it won't reach here.
+            // If they clicked open (handled above), it won't reach here.
+            // If they clicked generic card area, it comes here.
+
+            // We still need to block if they clicked some other interactive element we missed
             if (e.target.closest('button')) return;
+
             app.params.results = data;
             app.navigateTo('output');
         });

@@ -29,11 +29,25 @@ class App {
     onAuthChange(user) {
         this.user = user;
         console.log('User state changed:', user);
+
+        // Update UI info
+        if (user) {
+            const initial = user.displayName ? user.displayName[0].toUpperCase() : 'U';
+            document.getElementById('user-initial').textContent = initial;
+
+            // Update Modal Info
+            const modalInitial = document.getElementById('modal-user-initial');
+            const modalName = document.getElementById('modal-user-name');
+            const modalEmail = document.getElementById('modal-user-email');
+
+            if (modalInitial) modalInitial.textContent = initial;
+            if (modalName) modalName.textContent = user.displayName || 'Scholar';
+            if (modalEmail) modalEmail.textContent = user.email;
+        }
+
         // Re-render current view if needed (e.g. update nav bar)
-        if (this.currentView === 'landing') {
-            this.navigateTo('landing');
-        } else if (this.currentView === 'dashboard') {
-            this.navigateTo('dashboard');
+        if (this.currentView === 'landing' || this.currentView === 'dashboard') {
+            this.navigateTo(this.currentView);
         }
     }
 
@@ -112,17 +126,16 @@ class App {
                 });
                 break;
             case 'dashboard':
-                import('./ui/dashboard.js').then(module => module.renderDashboard(container, this));
-                // container.innerHTML = '<h1>Dashboard (Coming Soon)</h1><button onclick="window.app.navigateTo(\'landing\')">Back</button>';
+                import(`./ui/dashboard.js?v=${Date.now()}`).then(module => module.renderDashboard(container, this));
                 break;
             case 'input':
-                import('./ui/input.js').then(module => module.renderInput(container, this));
+                import(`./ui/input.js?v=${Date.now()}`).then(module => module.renderInput(container, this));
                 break;
             case 'processing':
-                import('./ui/processing.js').then(module => module.renderProcessing(container, this));
+                import(`./ui/processing.js?v=${Date.now()}`).then(module => module.renderProcessing(container, this));
                 break;
             case 'output':
-                import('./ui/output.js').then(module => module.renderOutput(container, this));
+                import(`./ui/output.js?v=${Date.now()}`).then(module => module.renderOutput(container, this));
                 break;
             default:
                 container.innerHTML = '<h1>404 View Not Found</h1>';
@@ -139,8 +152,69 @@ class App {
 window.app = new App();
 
 // Global Event Listeners for Shell Navigation
+// Global Event Listeners for Shell Navigation
 document.addEventListener('DOMContentLoaded', () => {
-    // Sidebar Links
+
+    // --- Mobile Bottom Nav Logic ---
+    const mobileLinks = document.querySelectorAll('.mobile-link[data-target]');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = link.dataset.target;
+            window.app.navigateTo(target);
+
+            // Update Active State
+            document.querySelectorAll('.mobile-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        });
+    });
+
+    // --- Profile Modal Logic ---
+    const modalOverlay = document.getElementById('profile-modal-overlay');
+
+    const openModal = () => {
+        if (modalOverlay) {
+            modalOverlay.classList.remove('hidden');
+            // Populate data if needed, though onAuthChange does it too
+            const user = window.app.user;
+            if (user) {
+                const initial = user.displayName ? user.displayName[0].toUpperCase() : 'U';
+                document.getElementById('modal-user-initial').textContent = initial;
+                document.getElementById('modal-user-name').textContent = user.displayName || 'Scholar';
+                document.getElementById('modal-user-email').textContent = user.email || '';
+            }
+        }
+    };
+
+    const closeModal = () => {
+        if (modalOverlay) modalOverlay.classList.add('hidden');
+    };
+
+    // Triggers
+    const btnProfile = document.getElementById('btn-profile'); // Desktop
+    const mobileProfile = document.getElementById('mobile-profile-trigger'); // Mobile Nav
+
+    if (btnProfile) btnProfile.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openModal();
+    });
+
+    if (mobileProfile) mobileProfile.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openModal();
+    });
+
+    // Close Actions
+    const btnClose = document.querySelector('.btn-close-modal');
+    if (btnClose) btnClose.addEventListener('click', closeModal);
+
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+    }
+
+    // --- Sidebar Links (Desktop) ---
     document.querySelectorAll('.nav-link[data-target]').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -149,15 +223,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Logout
-    document.getElementById('nav-logout').addEventListener('click', async (e) => {
-        e.preventDefault();
-        try {
-            const { logout } = await import('./auth.js');
-            await logout();
-            window.app.navigateTo('landing');
-        } catch (err) {
-            console.error("Logout failed:", err);
-        }
-    });
+    // --- Modal Actions ---
+    const modalSettings = document.getElementById('modal-action-settings');
+    if (modalSettings) {
+        modalSettings.addEventListener('click', () => {
+            alert("Settings feature coming soon!");
+        });
+    }
+
+    const modalLogout = document.getElementById('modal-action-logout');
+    if (modalLogout) {
+        modalLogout.addEventListener('click', async () => {
+            try {
+                const { logout } = await import('./auth.js');
+                await logout();
+                closeModal();
+                window.app.navigateTo('landing');
+            } catch (err) {
+                console.error("Logout failed:", err);
+            }
+        });
+    }
 });

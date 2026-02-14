@@ -1,8 +1,8 @@
-import { parsePDF, renderPageAsImage } from '../utils/pdfParser.js?v=2.0.3';
-import { parsePPTX, parseTextFile } from '../utils/pptParser.js?v=2.0.3';
-import { analyzeImage, analyzeMultipleImages } from '../utils/imageProcessor.js?v=2.0.3';
-import { transcribeAudio, transcribeVideo } from '../utils/audioTranscriber.js?v=2.0.3';
-import { generateSummary } from '../utils/summarizer.js?v=2.0.3';
+import { parsePDF, renderPageAsImage } from '../utils/pdfParser.js?v=2.0.4';
+import { parsePPTX, parseTextFile } from '../utils/pptParser.js?v=2.0.4';
+import { analyzeImage, analyzeMultipleImages } from '../utils/imageProcessor.js?v=2.0.4';
+import { transcribeAudio, transcribeVideo } from '../utils/audioTranscriber.js?v=2.0.4';
+import { generateSummary } from '../utils/summarizer.js?v=2.0.4';
 
 export async function renderProcessing(container, app) {
     container.innerHTML = `
@@ -89,6 +89,8 @@ export async function renderProcessing(container, app) {
         // Save Results to App State
         app.params.results = {
             extractedText,
+            type: type || 'text', // Persist the type (pdf, audio, etc)
+            topic: app.params.title || 'Untitled Analysis', // Pass title from input
             ...aiResult
         };
 
