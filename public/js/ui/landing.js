@@ -282,6 +282,24 @@ export function renderLanding(container, app) {
     // Initialize Icons
     if (window.lucide) window.lucide.createIcons();
 
+    // Scroll Animations (Intersection Observer)
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    container.querySelectorAll('.scroll-trigger, .glass-card, .timeline-steps > div').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+        observer.observe(el);
+    });
+
     // Event Listeners
     const inputs = ['btn-start-hero', 'btn-cta-end', 'btn-dashboard-nav'];
     inputs.forEach(id => {

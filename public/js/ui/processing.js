@@ -89,6 +89,8 @@ export async function renderProcessing(container, app) {
         // Save Results to App State
         app.params.results = {
             extractedText,
+            type: type || 'text', // Persist the type (pdf, audio, etc)
+            topic: app.params.title || 'Untitled Analysis', // Pass title from input
             ...aiResult
         };
 

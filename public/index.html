@@ -69,16 +69,29 @@
       <!-- Main Content Area -->
       <main class="main-content">
         <!-- Top Header -->
+        <!-- Top Header -->
         <header class="top-bar">
-          <h2 id="page-title" style="font-size: 1.1rem; font-weight: 600;">Dashboard</h2>
           <div style="display: flex; align-items: center; gap: 1rem;">
-            <!-- User Profile / Search could go here -->
-            <button class="btn-icon" style="background: transparent; border: none; color: white;">
-              <i data-lucide="bell"></i>
-            </button>
-            <div class="avatar"
-              style="width: 32px; height: 32px; background: var(--bg-card); border-radius: 50%; border: 1px solid var(--glass-border); display: grid; place-items: center;">
-              <i data-lucide="user" width="16"></i>
+            <!-- Mobile Menu removed -->
+            <h2 id="page-title" style="font-size: 1.1rem; font-weight: 600;">Dashboard</h2>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 1.25rem;">
+
+            <!-- Profile Trigger (Opens Modal) -->
+            <div style="position: relative;">
+              <button id="btn-profile" style="
+                    background: transparent; border: none; cursor: pointer; padding: 0;
+                    display: flex; align-items: center; gap: 0.75rem;
+                ">
+                <div class="avatar" style="
+                        width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--secondary));
+                        border-radius: 12px; display: grid; place-items: center; color: white; font-weight: 600;
+                        box-shadow: 0 4px 12px var(--primary-surface);
+                    ">
+                  <span id="user-initial">U</span>
+                </div>
+              </button>
             </div>
           </div>
         </header>
@@ -90,13 +103,53 @@
           <div id="view-input" class="hidden"></div>
           <div id="view-processing" class="hidden"></div>
           <div id="view-output" class="hidden"></div>
+          <div style="padding-bottom: 80px;"></div>
         </div>
       </main>
-    </div>
-  </div>
+      <!-- Mobile Bottom Navigation (Visible only on mobile) -->
+      <nav id="mobile-nav" class="mobile-nav hidden">
+        <a class="mobile-link active" data-target="dashboard">
+          <i data-lucide="layout-grid"></i>
+          <span>Library</span>
+        </a>
+        <a class="mobile-link" data-target="input">
+          <div class="fab">
+            <i data-lucide="plus"></i>
+          </div>
+        </a>
+        <a class="mobile-link" id="mobile-profile-trigger">
+          <i data-lucide="user"></i>
+          <span>Profile</span>
+        </a>
+      </nav>
 
-  <!-- Modals -->
-  <div id="modal-container"></div>
+      <!-- Profile Modal (Mobile & Desktop) -->
+      <div id="profile-modal-overlay" class="modal-overlay hidden">
+        <div class="modal-card">
+          <button class="btn-close-modal"><i data-lucide="x"></i></button>
+
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="avatar-large">
+              <span id="modal-user-initial">U</span>
+            </div>
+            <h3 id="modal-user-name" style="margin-top: 1rem;">User Name</h3>
+            <p id="modal-user-email" style="color: var(--text-muted); font-size: 0.9rem;">user@example.com</p>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn-modal-action" id="modal-action-settings">
+              <i data-lucide="settings"></i> Settings
+            </button>
+            <button class="btn-modal-action danger" id="modal-action-logout">
+              <i data-lucide="log-out"></i> Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-container"></div>
 </body>
 
 </html>
