@@ -1,4 +1,7 @@
-import { GROQ_API_KEY, GROQ_MODEL } from '../config.js';
+import { CONFIG } from '../config.js';
+
+const GROQ_API_KEY = CONFIG.VITE_GROQ_API_KEY || CONFIG.GROQ_API_KEY;
+const GROQ_MODEL = 'llama-3.3-70b-versatile'; // Updated to latest supported model
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 

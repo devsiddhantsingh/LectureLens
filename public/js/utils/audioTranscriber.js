@@ -1,4 +1,7 @@
-import { GROQ_API_KEY, GROQ_WHISPER_MODEL } from '../config.js';
+import { CONFIG } from '../config.js';
+
+const GROQ_API_KEY = CONFIG.VITE_GROQ_API_KEY || CONFIG.GROQ_API_KEY;
+const GROQ_WHISPER_MODEL = 'whisper-large-v3'; // Hardcoded or add to config
 
 export async function transcribeAudio(file) {
     if (!GROQ_API_KEY) {

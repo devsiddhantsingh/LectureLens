@@ -1,8 +1,8 @@
-import { parsePDF, renderPageAsImage } from '../utils/pdfParser.js';
-import { parsePPTX, parseTextFile } from '../utils/pptParser.js';
-import { analyzeImage, analyzeMultipleImages } from '../utils/imageProcessor.js';
-import { transcribeAudio, transcribeVideo } from '../utils/audioTranscriber.js';
-import { generateSummary } from '../utils/summarizer.js';
+import { parsePDF, renderPageAsImage } from '../utils/pdfParser.js?v=2.0.3';
+import { parsePPTX, parseTextFile } from '../utils/pptParser.js?v=2.0.3';
+import { analyzeImage, analyzeMultipleImages } from '../utils/imageProcessor.js?v=2.0.3';
+import { transcribeAudio, transcribeVideo } from '../utils/audioTranscriber.js?v=2.0.3';
+import { generateSummary } from '../utils/summarizer.js?v=2.0.3';
 
 export async function renderProcessing(container, app) {
     container.innerHTML = `

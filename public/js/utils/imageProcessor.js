@@ -1,4 +1,7 @@
-import { GROQ_API_KEY, GROQ_VISION_MODEL_USER } from '../config.js';
+import { CONFIG } from '../config.js';
+
+const GROQ_API_KEY = CONFIG.VITE_GROQ_API_KEY || CONFIG.GROQ_API_KEY;
+const GROQ_VISION_MODEL_USER = 'llama-3.2-11b-vision-preview'; // Hardcoded fallback or add to config if needed
 
 export async function analyzeImage(file) {
     if (!GROQ_API_KEY) {
