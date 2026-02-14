@@ -112,17 +112,16 @@ class App {
                 });
                 break;
             case 'dashboard':
-                import('./ui/dashboard.js').then(module => module.renderDashboard(container, this));
-                // container.innerHTML = '<h1>Dashboard (Coming Soon)</h1><button onclick="window.app.navigateTo(\'landing\')">Back</button>';
+                import(`./ui/dashboard.js?v=${Date.now()}`).then(module => module.renderDashboard(container, this));
                 break;
             case 'input':
-                import('./ui/input.js').then(module => module.renderInput(container, this));
+                import(`./ui/input.js?v=${Date.now()}`).then(module => module.renderInput(container, this));
                 break;
             case 'processing':
-                import('./ui/processing.js').then(module => module.renderProcessing(container, this));
+                import(`./ui/processing.js?v=${Date.now()}`).then(module => module.renderProcessing(container, this));
                 break;
             case 'output':
-                import('./ui/output.js').then(module => module.renderOutput(container, this));
+                import(`./ui/output.js?v=${Date.now()}`).then(module => module.renderOutput(container, this));
                 break;
             default:
                 container.innerHTML = '<h1>404 View Not Found</h1>';
