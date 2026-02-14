@@ -29,7 +29,7 @@ Perfect for:
 Drag & drop **PDFs**, **PowerPoints**, **audio**,  **video** or **text**. LectureLens handles them all.
 
 ### 🧠 AI-Powered Summaries
-Get executive summaries, key points, and exam-ready highlights instantly—thanks to Groq's Llama 3 & Mixtral models.
+Get executive summaries, key points, and exam-ready highlights instantly—thanks to Groq's Llama 3.3 & Whisper models.
 
 ### 📝 Smart Note Generation
 Automatically extract:
@@ -64,7 +64,7 @@ Download polished study guides for offline reading on any device.
 |-------|-----------|
 | **Frontend** | Vanilla JavaScript (ES Modules), HTML5, CSS3 |
 | **Backend** | Firebase (Firestore, Authentication) |
-| **AI Engine** | Groq API (Llama 3.1 / Mixtral 8x7b) |
+| **AI Engine** | Groq API (Llama 3.3 / Whisper / Llama Vision) |
 | **PDF Handling** | PDF.js, jsPDF |
 | **UI Enhancements** | Vanta.js (3D backgrounds), Lucide (icons) |
 | **Hosting** | Firebase Hosting |
